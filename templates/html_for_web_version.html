@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sealify - Transform Any Image into a Seal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        .float-animation {
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .animated-gradient {
+            background: linear-gradient(-45deg, #667eea, #764ba2, #f093fb, #4facfe);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+        }
+    </style>
+</head>
+<body class="animated-gradient min-h-screen p-4">
+    <div class="max-w-7xl mx-auto my-8">
+        <!-- Header with Seal Image -->
+        <div class="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-8 mb-6">
+            <div class="flex items-center justify-center gap-4 mb-4">
+                <img src="/static/seal.jpg" alt="Seal" class="w-20 h-20 rounded-full object-cover shadow-lg float-animation border-4 border-purple-300">
+                 <img src="/static/seal.jpg" alt="Seal" class="w-20 h-20 rounded-full object-cover shadow-lg float-animation border-4 border-purple-300">
+                  <img src="/static/seal.jpg" alt="Seal" class="w-20 h-20 rounded-full object-cover shadow-lg float-animation border-4 border-purple-300">
+                <h1 class="text-6xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
+                    Sealify
+                </h1>
+                 <img src="/static/seal.jpg" alt="Seal" class="w-20 h-20 rounded-full object-cover shadow-lg float-animation border-4 border-purple-300">
+                  <img src="/static/seal.jpg" alt="Seal" class="w-20 h-20 rounded-full object-cover shadow-lg float-animation border-4 border-purple-300">
+                   <img src="/static/seal.jpg" alt="Seal" class="w-20 h-20 rounded-full object-cover shadow-lg float-animation border-4 border-purple-300">
+            </div>
+            <p class="text-xl text-gray-600 text-center">Transform any image into a seal through pixel rearrangement</p>
+            <p class="text-sm text-gray-500 text-center mt-2">Watch as pixels flow and rearrange to form a seal 🦭🦭🦭🦭🦭🦭🦭</p>
+        </div>
+
+        <!-- Main Content -->
+        <div class="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-8">
+            <!-- Upload Section -->
+            <div class="text-center mb-8">
+                <input type="file" id="fileInput" accept="image/*" class="hidden">
+                <button 
+                    id="uploadBtn" 
+                    onclick="document.getElementById('fileInput').click()"
+                    class="group relative bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold py-5 px-10 rounded-full text-xl transition-all duration-300 transform hover:scale-105 shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-lg">
+                    <span class="flex items-center gap-3">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        Choose Image to Sealify
+                    </span>
+                    <div class="absolute inset-0 rounded-full bg-white opacity-0 group-hover:opacity-20 transition-opacity"></div>
+                </button>
+            </div>
+            
+            <!-- Status -->
+            <div id="status" class="text-center p-5 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-2xl mb-6 border-2 border-purple-200">
+                <p class="text-lg font-medium text-gray-700">✨ Ready! Upload an image to begin the transformation.</p>
+            </div>
+            
+            <!-- Progress Bar -->
+            <div id="progressBar" class="w-full h-3 bg-gray-200 rounded-full overflow-hidden mb-6 hidden shadow-inner">
+                <div id="progressFill" class="h-full bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 transition-all duration-100 animate-pulse" style="width: 0%"></div>
+            </div>
+            
+            <!-- Canvas Container -->
+            <div class="grid md:grid-cols-2 gap-8 mb-6">
+                <div class="group bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 border-2 border-gray-200 hover:border-purple-300">
+                    <h3 class="text-2xl font-bold text-gray-800 text-center mb-4 flex items-center justify-center gap-2">
+                        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        Source Image
+                    </h3>
+                    <div class="bg-gray-900 rounded-xl p-2 shadow-inner">
+                        <canvas id="sourceCanvas" width="128" height="128" class="w-full h-auto rounded-lg" style="image-rendering: pixelated;"></canvas>
+                    </div>
+                </div>
+                <div class="group bg-gradient-to-br from-purple-50 to-indigo-50 rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 border-2 border-purple-200 hover:border-purple-400">
+                    <h3 class="text-2xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent text-center mb-4 flex items-center justify-center gap-2">
+                        <span class="text-3xl">🦭</span>
+                        Sealified Result
+                    </h3>
+                    <div class="bg-gray-900 rounded-xl p-2 shadow-inner ring-2 ring-purple-300">
+                        <canvas id="resultCanvas" width="128" height="128" class="w-full h-auto rounded-lg" style="image-rendering: pixelated;"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Info -->
+            <div class="text-center bg-gradient-to-r from-purple-100 to-indigo-100 rounded-2xl p-4 border-2 border-purple-200">
+                <div class="flex flex-wrap justify-center gap-4 text-gray-700">
+                    <div class="flex items-center gap-2">
+                        <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
+                        </svg>
+                        <span class="font-semibold">MADE BY GABRIEL VELAZQUEZ BERRUETA</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
+                        <span class="font-semibold">SEAL LOVER</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span class="font-semibold">FOLLOW ME ON LINKEDIN LOL</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center mt-6 text-white/90">
+            <p class="text-sm">Made with 💜 using pixel rearrangement algorithms</p>
+        </div>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const status = document.getElementById('status');
+        const progressBar = document.getElementById('progressBar');
+        const progressFill = document.getElementById('progressFill');
+        const sourceCanvas = document.getElementById('sourceCanvas');
+        const resultCanvas = document.getElementById('resultCanvas');
+        const sourceCtx = sourceCanvas.getContext('2d');
+        const resultCtx = resultCanvas.getContext('2d');
+
+        let animationData = null;
+        let animationFrame = 0;
+        let animationId = null;
+
+        function setStatus(message, type = 'info') {
+            const icons = {
+                info: '',
+                success: '',
+                error: '❌',
+                processing: '⚙️'
+            };
+            
+            const colors = {
+                info: 'from-purple-50 to-indigo-50 border-purple-200 text-gray-700',
+                success: 'from-green-50 to-emerald-50 border-green-300 text-green-700',
+                error: 'from-red-50 to-pink-50 border-red-300 text-red-700',
+                processing: 'from-yellow-50 to-amber-50 border-yellow-300 text-yellow-800'
+            };
+            
+            status.className = `text-center p-5 bg-gradient-to-r rounded-2xl mb-6 border-2 ${colors[type]}`;
+            status.innerHTML = `<p class="text-lg font-medium">${icons[type]} ${message}</p>`;
+        }
+
+        function showProgress(show) {
+            progressBar.classList.toggle('hidden', !show);
+        }
+
+        function updateProgress(percent) {
+            progressFill.style.width = percent + '%';
+        }
+
+        fileInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // Show file on source canvas
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const img = new Image();
+                img.onload = () => {
+                    sourceCtx.drawImage(img, 0, 0, 128, 128);
+                    resultCtx.drawImage(img, 0, 0, 128, 128);
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+
+            // Upload and transform
+            uploadBtn.disabled = true;
+            setStatus('Uploading and calculating pixel mapping...', 'processing');
+            showProgress(true);
+            updateProgress(30);
+
+            const formData = new FormData();
+            formData.append('source', file);
+
+            try {
+                const response = await fetch('/api/transform', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`Server error: ${response.status} - ${errorText}`);
+                }
+
+                const data = await response.json();
+
+                if (!data.success) {
+                    throw new Error(data.error || 'Transformation failed');
+                }
+
+                updateProgress(100);
+                setStatus('Mapping complete! Starting animation...', 'processing');
+
+                // Wait a moment then start animation
+                setTimeout(() => {
+                    animationData = data;
+                    startAnimation();
+                }, 500);
+
+            } catch (error) {
+                setStatus('Error: ' + error.message, 'error');
+                uploadBtn.disabled = false;
+                showProgress(false);
+            }
+        });
+
+        function startAnimation() {
+            animationFrame = 0;
+            const totalFrames = 50; // 5 seconds * 10 FPS
+            
+            function animate() {
+                if (animationFrame >= totalFrames) {
+                    // Animation complete
+                    setStatus('Transformation complete! 🦭', 'success');
+                    uploadBtn.disabled = false;
+                    showProgress(false);
+                    return;
+                }
+
+                const progress = animationFrame / totalFrames;
+                const easedProgress = easeInOutCubic(progress);
+
+                // Draw frame
+                drawFrame(easedProgress);
+
+                // Update status
+                const percent = Math.floor(progress * 100);
+                setStatus(`TRANSFORMATION BEGUN SILLY SEAL BEING CREATED: ${percent}% (${animationFrame}/${totalFrames} frames)`, 'processing');
+                updateProgress(percent);
+
+                animationFrame++;
+                animationId = setTimeout(animate, 100);
+            }
+
+            animate();
+        }
+
+        function drawFrame(progress) {
+            const { width, height, source_positions, target_positions, mapping, source_pixels } = animationData;
+            
+            // Clear canvas
+            resultCtx.fillStyle = '#000000';
+            resultCtx.fillRect(0, 0, width, height);
+
+            const imageData = resultCtx.createImageData(width, height);
+            const data = imageData.data;
+
+            // For each target pixel
+            for (let targetIdx = 0; targetIdx < width * height; targetIdx++) {
+                const sourceIdx = mapping[targetIdx];
+                
+                // Source position
+                const [sy, sx] = source_positions[sourceIdx];
+                
+                // Target position
+                const [ty, tx] = target_positions[targetIdx];
+                
+                // Interpolate position
+                const currentY = Math.floor(sy + (ty - sy) * progress);
+                const currentX = Math.floor(sx + (tx - sx) * progress);
+                
+                // Clamp to canvas bounds
+                const cy = Math.max(0, Math.min(height - 1, currentY));
+                const cx = Math.max(0, Math.min(width - 1, currentX));
+                
+                // Get pixel color
+                const [r, g, b] = source_pixels[sourceIdx];
+                
+                // Set pixel
+                const pixelIndex = (cy * width + cx) * 4;
+                data[pixelIndex] = r;
+                data[pixelIndex + 1] = g;
+                data[pixelIndex + 2] = b;
+                data[pixelIndex + 3] = 255;
+            }
+
+            resultCtx.putImageData(imageData, 0, 0);
+        }
+
+        function easeInOutCubic(t) {
+            return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+        }
+    </script>
+</body>
+</html>
